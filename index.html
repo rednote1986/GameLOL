@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fruit Color Adventure</title>
+
+<style>
+:root{
+  --primary:#FF6B6B;
+  --secondary:#4ECDC4;
+  --bg:#F7FFF7;
+  --text:#1A535C;
+}
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:var(--bg);
+  font-family:Arial, sans-serif;
+  color:var(--text);
+}
+#game{
+  background:#fff;
+  padding:20px;
+  border-radius:30px;
+  width:90%;
+  max-width:420px;
+  text-align:center;
+  border:6px solid var(--secondary);
+}
+.fruit{font-size:90px}
+button{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  font-size:1.2rem;
+  border-radius:20px;
+  border:none;
+  background:var(--primary);
+  color:#fff;
+}
+.option{
+  background:#f0fdfa;
+  color:#000;
+}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<div id="game">
+
+<!-- START -->
+<div id="start">
+  <h1>FRUIT COLORS</h1>
+  <div class="fruit">🍎</div>
+  <p>Can you guess the color?</p>
+  <button onclick="startGame()">START</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="hidden">
+  <h3 id="progress"></h3>
+  <div class="fruit" id="fruit"></div>
+  <h2>What color is this?</h2>
+  <div id="options"></div>
+</div>
+
+<!-- END -->
+<div id="end" class="hidden">
+  <h1>Great Job! 🎉</h1>
+  <p id="scoreText"></p>
+  <button onclick="location.reload()">PLAY AGAIN</button>
+</div>
+
+</div>
+
+<script>
+const data=[
+ {fruit:"🍎",color:"Red",opts:["Red","Blue","Green","Yellow"]},
+ {fruit:"🍌",color:"Yellow",opts:["Purple","Yellow","Black","White"]},
+ {fruit:"🍊",color:"Orange",opts:["Orange","Green","Red","Brown"]},
+ {fruit:"🍇",color:"Purple",opts:["Purple","Blue","Yellow","Red"]},
+ {fruit:"🥑",color:"Green",opts:["Green","Pink","Orange","White"]}
+];
+
+let i=0,score=0;
+
+function playSound(name){
+  new Audio("sounds/"+name+".mp3").play();
+}
+
+function startGame(){
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  playSound("start");
+  load();
+}
+
+function load(){
+  if(i>=data.length){
+    end();
+    return;
+  }
+  document.getElementById("progress").innerText=`${i+1}/${data.length}`;
+  document.getElementById("fruit").innerText=data[i].fruit;
+  const opt=document.getElementById("options");
+  opt.innerHTML="";
+  data[i].opts.sort(()=>Math.random()-0.5).forEach(o=>{
+    const b=document.createElement("button");
+    b.className="option";
+    b.innerText=o;
+    b.onclick=()=>check(o);
+    opt.appendChild(b);
+  });
+}
+
+function check(ans){
+  if(ans===data[i].color){
+    score+=20;
+    playSound("correct");
+  }else{
+    playSound("wrong");
+  }
+  i++;
+  setTimeout(load,800);
+}
+
+function end(){
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("end").classList.remove("hidden");
+  document.getElementById("scoreText").innerText="Score: "+score;
+  playSound("finish");
+}
+</script>
+</body>
+</html>
